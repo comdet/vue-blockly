@@ -2,10 +2,6 @@ var Blockly = {}; Blockly.Msg={};  module.exports = function(){// This file was 
 
 'use strict';
 
-goog.provide('Blockly.Msg.th');
-
-goog.require('Blockly.Msg');
-
 Blockly.Msg["ADD_COMMENT"] = "ใส่คำอธิบาย";
 Blockly.Msg["CANNOT_DELETE_VARIABLE_PROCEDURE"] = "ไม่สามารถลบตัวแปร '%1' ได้เนื่องจากเป็นส่วนหนึ่งของนิยามของฟังก์ชัน '%2'";
 Blockly.Msg["CHANGE_VALUE_TITLE"] = "เปลี่ยนค่า:";
@@ -432,4 +428,5 @@ Blockly.Msg["VARIABLES_HUE"] = "330";
 Blockly.Msg["TEXTS_HUE"] = "160";
 Blockly.Msg["PROCEDURES_HUE"] = "290";
 Blockly.Msg["COLOUR_HUE"] = "20";
-Blockly.Msg["VARIABLES_DYNAMIC_HUE"] = "310";}
+Blockly.Msg["VARIABLES_DYNAMIC_HUE"] = "310";
+}

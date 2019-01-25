@@ -2,10 +2,6 @@
 
 'use strict';
 
-goog.provide('Blockly.Msg.th');
-
-goog.require('Blockly.Msg');
-
 Blockly.Msg["ADD_COMMENT"] = "ใส่คำอธิบาย";
 Blockly.Msg["CANNOT_DELETE_VARIABLE_PROCEDURE"] = "ไม่สามารถลบตัวแปร '%1' ได้เนื่องจากเป็นส่วนหนึ่งของนิยามของฟังก์ชัน '%2'";
 Blockly.Msg["CHANGE_VALUE_TITLE"] = "เปลี่ยนค่า:";

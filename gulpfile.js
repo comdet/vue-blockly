@@ -5,9 +5,6 @@ var gulp = require('gulp'),
     rename = require("gulp-rename"),
     insert = require('gulp-insert');
 
-var _browserRename = function(path) {
-  path.basename += "_browser";
-}
 
 var document = `var JSDOM = require('jsdom').JSDOM;
       var window = (new JSDOM()).window;
@@ -73,15 +70,21 @@ gulp.task('js', function() {
       .pipe(gulp.dest('dist'))
 });
 
+gulp.task('message', function(){
+  return gulp.src('blockly/msg/messages.js')
+      .pipe(insert.wrap('var Blockly = {}; Blockly.Msg={};  module.exports = function(){','\n}'))
+      .pipe(gulp.dest('dist/msg'))
+});
+
 gulp.task('th', function(){
   return gulp.src('blockly/msg/js/th.js')
-      .pipe(insert.wrap('var Blockly = {}; Blockly.Msg={};  module.exports = function(){','}'))
+      .pipe(insert.wrap('var Blockly = {}; Blockly.Msg={};  module.exports = function(){','\n}'))
       .pipe(gulp.dest('dist/msg'))
 });
 
 gulp.task('en', function(){
   return gulp.src('blockly/msg/js/en.js')
-      .pipe(insert.wrap('var Blockly = {}; Blockly.Msg={};  module.exports = function(){','}'))
+      .pipe(insert.wrap('var Blockly = {}; Blockly.Msg={};  module.exports = function(){','\n}'))
       .pipe(gulp.dest('dist/msg'))
 });
 
@@ -89,6 +92,7 @@ gulp.task('build', [
   'blocks',  
   'blockly',
   'js',
+  'message',
   'th',
   'en'
 ]);
