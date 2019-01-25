@@ -37,7 +37,7 @@ gulp.task('blockly', function() {
           //....ORIGINAL CODE....
           `Blockly.goog=goog;return Blockly;
       })()`))
-      .pipe(rename(_browserRename))
+      //.pipe(rename(_browserRename))
       .pipe(gulp.dest('dist'))
 });
 /*
@@ -63,7 +63,7 @@ gulp.task('blocks', function() {
           //....ORIGINAL CODE....
           `return Blockly.Blocks;
         }`))
-      .pipe(rename(_browserRename))
+      //.pipe(rename(_browserRename))
       .pipe(gulp.dest('dist'))
 });
 
