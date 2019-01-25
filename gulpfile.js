@@ -38,7 +38,7 @@ gulp.task('blockly', function() {
           `Blockly.goog=goog;return Blockly;
       })()`))
       .pipe(rename(_browserRename))
-      .pipe(gulp.dest('lib'))
+      .pipe(gulp.dest('dist'))
 });
 /*
 gulp.task('blocks', function() {
@@ -64,19 +64,33 @@ gulp.task('blocks', function() {
           `return Blockly.Blocks;
         }`))
       .pipe(rename(_browserRename))
-      .pipe(gulp.dest('lib'))
+      .pipe(gulp.dest('dist'))
 });
 
 gulp.task('js', function() {
   return gulp.src('blockly/javascript_compressed.js')
       .pipe(insert.wrap('module.exports = function(Blockly){', 'return Blockly.JavaScript;}'))
-      .pipe(gulp.dest('lib'))
+      .pipe(gulp.dest('dist'))
+});
+
+gulp.task('th', function(){
+  return gulp.src('blockly/msg/js/th.js')
+      .pipe(insert.wrap('var Blockly = {}; Blockly.Msg={};  module.exports = function(){','}'))
+      .pipe(gulp.dest('dist/msg'))
+});
+
+gulp.task('en', function(){
+  return gulp.src('blockly/msg/js/en.js')
+      .pipe(insert.wrap('var Blockly = {}; Blockly.Msg={};  module.exports = function(){','}'))
+      .pipe(gulp.dest('dist/msg'))
 });
 
 gulp.task('build', [  
   'blocks',  
   'blockly',
-  'js',  
+  'js',
+  'th',
+  'en'
 ]);
 
 
