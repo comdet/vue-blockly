@@ -1,6 +1,6 @@
-const Blockly = require('./blockly/blockly_compressed');
+const Blockly = require('./dist/blockly_compressed');
 
-Blockly.Blocks = Object.assign(Blockly.Blocks, require('./blockly/blocks_compressed')(Blockly));
-Blockly.JavaScript = require('./blockly/javascript_compressed')(Blockly);
+Blockly.Blocks = Object.assign(Blockly.Blocks, require('./dist/blocks_compressed')(Blockly));
+Blockly.JavaScript = require('./dist/javascript_compressed')(Blockly);
 
 module.exports = Blockly;
