@@ -37,20 +37,7 @@ gulp.task('blockly', function() {
       //.pipe(rename(_browserRename))
       .pipe(gulp.dest('dist'))
 });
-/*
-gulp.task('blocks', function() {
-  return gulp.src('blockly/blocks_compressed.js')
-      .pipe(insert.wrap(`
-        module.exports = function(Blockly){
-          var goog = Blockly.goog;
-          ${document}
-          Blockly.Blocks={};`,
-          //....ORIGINAL CODE....
-          `return Blockly.Blocks;
-        }`))
-      .pipe(gulp.dest('lib'))
-});
-*/
+
 gulp.task('blocks', function() {
   return gulp.src('blockly/blocks_compressed.js')
       .pipe(insert.wrap(`
@@ -60,7 +47,6 @@ gulp.task('blocks', function() {
           //....ORIGINAL CODE....
           `return Blockly.Blocks;
         }`))
-      //.pipe(rename(_browserRename))
       .pipe(gulp.dest('dist'))
 });
 
@@ -70,21 +56,16 @@ gulp.task('js', function() {
       .pipe(gulp.dest('dist'))
 });
 
-gulp.task('message', function(){
-  return gulp.src('blockly/msg/messages.js')
-      .pipe(insert.wrap('var Blockly = {}; Blockly.Msg={};  module.exports = function(){','\n}'))
-      .pipe(gulp.dest('dist/msg'))
-});
 
 gulp.task('th', function(){
   return gulp.src('blockly/msg/js/th.js')
-      .pipe(insert.wrap('var Blockly = {}; Blockly.Msg={};  module.exports = function(){','\n}'))
+      .pipe(insert.wrap('var Blockly = {}; Blockly.Msg={};  module.exports = function(){','\n return Blockly.Msg;}'))
       .pipe(gulp.dest('dist/msg'))
 });
 
 gulp.task('en', function(){
   return gulp.src('blockly/msg/js/en.js')
-      .pipe(insert.wrap('var Blockly = {}; Blockly.Msg={};  module.exports = function(){','\n}'))
+      .pipe(insert.wrap('var Blockly = {}; Blockly.Msg={};  module.exports = function(){','\n return Blockly.Msg;}'))
       .pipe(gulp.dest('dist/msg'))
 });
 
@@ -92,7 +73,6 @@ gulp.task('build', [
   'blocks',  
   'blockly',
   'js',
-  'message',
   'th',
   'en'
 ]);
