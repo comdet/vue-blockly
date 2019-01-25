@@ -58,13 +58,13 @@ gulp.task('js', function() {
 
 
 gulp.task('th', function(){
-  return gulp.src('blockly/msg/js/th.js')
+  return gulp.src('blockly/msg/th.js')
       .pipe(insert.wrap('var Blockly = {}; Blockly.Msg={};  module.exports = function(){','\n return Blockly.Msg;}'))
       .pipe(gulp.dest('dist/msg'))
 });
 
 gulp.task('en', function(){
-  return gulp.src('blockly/msg/js/en.js')
+  return gulp.src('blockly/msg/en.js')
       .pipe(insert.wrap('var Blockly = {}; Blockly.Msg={};  module.exports = function(){','\n return Blockly.Msg;}'))
       .pipe(gulp.dest('dist/msg'))
 });
