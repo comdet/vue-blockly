@@ -21,7 +21,7 @@
     "mocha": "^4.0.1"
   },
   "scripts": {    
-    "postinstall": "rm -rf dist && mkdir dist && gulp build"
+    "postinstall": "gulp build"
   },
   "repository": {
     "type": "git",
