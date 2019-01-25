@@ -20,8 +20,9 @@
     "gulp-replace": "^0.6.1",
     "mocha": "^4.0.1"
   },
-  "scripts": {    
-    "prepublish": "rm -rf dist && mkdir dist && gulp build"
+  "scripts": {
+    "blockly:upgrade": "git submodule init && git submodule update --recursive --remote",
+    "postinstall": "rm -rf dist && mkdir dist && gulp build"
   },
   "repository": {
     "type": "git",
