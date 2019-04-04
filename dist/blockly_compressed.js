@@ -1351,8 +1351,24 @@ Blockly.WorkspaceSvg.prototype.showContextMenu_=function(a){function b(a){if(a.i
 this.undo.bind(this,!1);d.push(h);h={};h.text=Blockly.Msg.REDO;h.enabled=0<this.redoStack_.length;h.callback=this.undo.bind(this,!0);d.push(h);this.scrollbar&&(h={},h.text=Blockly.Msg.CLEAN_UP,h.enabled=1<e.length,h.callback=this.cleanUp.bind(this),d.push(h));if(this.options.collapse){for(var k=h=!1,l=0;l<e.length;l++)for(var n=e[l];n;)n.isCollapsed()?h=!0:k=!0,n=n.getNextBlock();var m=function(a){for(var b=0,c=0;c<e.length;c++)for(var d=e[c];d;)setTimeout(d.setCollapsed.bind(d,a),b),d=d.getNextBlock(),
 b+=10};k={enabled:k};k.text=Blockly.Msg.COLLAPSE_ALL;k.callback=function(){m(!0)};d.push(k);h={enabled:h};h.text=Blockly.Msg.EXPAND_ALL;h.callback=function(){m(!1)};d.push(h)}var p=[];for(l=0;l<e.length;l++)b(e[l]);h={text:1==p.length?Blockly.Msg.DELETE_BLOCK:Blockly.Msg.DELETE_X_BLOCKS.replace("%1",String(p.length)),enabled:0<p.length,callback:function(){g.currentGesture_&&g.currentGesture_.cancel();2>p.length?c():Blockly.confirm(Blockly.Msg.DELETE_ALL_BLOCKS.replace("%1",p.length),function(a){a&&
 c()})}};d.push(h);this.configureContextMenu&&this.configureContextMenu(d);Blockly.ContextMenu.show(a,d,this.RTL)}};
-Blockly.WorkspaceSvg.prototype.updateToolbox=function(a){if(a=Blockly.Options.parseToolboxTree(a)){if(!this.options.languageTree)throw"Existing toolbox is null.  Can't create new toolbox.";if(a.getElementsByTagName("category").length){if(!this.toolbox_)throw"Existing toolbox has no categories.  Can't change mode.";this.options.languageTree=a;this.toolbox_.populate_(a);this.toolbox_.addColour_();this.toolbox_.addIcon_();}else{if(!this.flyout_)throw"Existing toolbox has categories.  Can't change mode.";this.options.languageTree=
-a;this.flyout_.show(a.childNodes)}}else if(this.options.languageTree)throw"Can't nullify an existing toolbox.";};Blockly.WorkspaceSvg.prototype.markFocused=function(){this.options.parentWorkspace?this.options.parentWorkspace.markFocused():(Blockly.mainWorkspace=this,this.setBrowserFocus())};Blockly.WorkspaceSvg.prototype.setBrowserFocus=function(){document.activeElement&&document.activeElement.blur();try{this.getParentSvg().focus()}catch(a){try{this.getParentSvg().parentNode.setActive()}catch(b){this.getParentSvg().parentNode.focus()}}};
+Blockly.WorkspaceSvg.prototype.updateToolbox = function(a) {
+    if (a = Blockly.Options.parseToolboxTree(a)) {
+        if (!this.options.languageTree) throw "Existing toolbox is null.  Can't create new toolbox.";
+        if (a.getElementsByTagName("category").length) {
+            if (!this.toolbox_) throw "Existing toolbox has no categories.  Can't change mode.";
+            this.options.languageTree = a;
+            this.toolbox_.populate_(a);
+            this.toolbox_.addColour_();
+            this.toolbox_.addIcon_();
+        } else {
+            if (!this.flyout_) throw "Existing toolbox has categories.  Can't change mode.";
+            this.options.languageTree =
+                a;
+            this.flyout_.show(a.childNodes)
+        }
+    } else if (this.options.languageTree) throw "Can't nullify an existing toolbox.";
+};
+Blockly.WorkspaceSvg.prototype.markFocused=function(){this.options.parentWorkspace?this.options.parentWorkspace.markFocused():(Blockly.mainWorkspace=this,this.setBrowserFocus())};Blockly.WorkspaceSvg.prototype.setBrowserFocus=function(){document.activeElement&&document.activeElement.blur();try{this.getParentSvg().focus()}catch(a){try{this.getParentSvg().parentNode.setActive()}catch(b){this.getParentSvg().parentNode.focus()}}};
 Blockly.WorkspaceSvg.prototype.zoom=function(a,b,c){var d=this.options.zoomOptions.scaleSpeed,e=this.getMetrics(),f=this.getParentSvg().createSVGPoint();f.x=a;f.y=b;f=f.matrixTransform(this.getCanvas().getCTM().inverse());a=f.x;b=f.y;f=this.getCanvas();d=Math.pow(d,c);c=this.scale*d;c>this.options.zoomOptions.maxScale?d=this.options.zoomOptions.maxScale/this.scale:c<this.options.zoomOptions.minScale&&(d=this.options.zoomOptions.minScale/this.scale);this.scale!=c&&(this.scrollbar&&(a=f.getCTM().translate(a*
 (1-d),b*(1-d)).scale(d),this.scrollX=a.e-e.absoluteLeft,this.scrollY=a.f-e.absoluteTop),this.setScale(c))};Blockly.WorkspaceSvg.prototype.zoomCenter=function(a){var b=this.getMetrics();this.zoom(b.viewWidth/2,b.viewHeight/2,a)};
 Blockly.WorkspaceSvg.prototype.zoomToFit=function(){var a=this.getMetrics(),b=this.getBlocksBoundingBox(),c=b.width;b=b.height;if(c){var d=a.viewWidth,e=a.viewHeight;this.flyout_&&(d-=this.flyout_.width_);this.scrollbar||(c+=a.contentLeft,b+=a.contentTop);this.setScale(Math.min(d/c,e/b));this.scrollCenter()}};
@@ -1690,9 +1706,49 @@ Blockly.VerticalFlyout.prototype.getClientRect=function(){if(!this.svgGroup_)ret
 Blockly.VerticalFlyout.prototype.reflowInternal_=function(){this.workspace_.scale=this.targetWorkspace_.scale;for(var a=0,b=this.workspace_.getTopBlocks(!1),c=0,d;d=b[c];c++){var e=d.getHeightWidth().width;d.outputConnection&&(e-=Blockly.BlockSvg.TAB_WIDTH);a=Math.max(a,e)}for(c=0;d=this.buttons_[c];c++)a=Math.max(a,d.width);a+=1.5*this.MARGIN+Blockly.BlockSvg.TAB_WIDTH;a*=this.workspace_.scale;a+=Blockly.Scrollbar.scrollbarThickness;if(this.width_!=a){for(c=0;d=b[c];c++)this.RTL&&(e=d.getRelativeToSurfaceXY().x,
 d.moveBy(a/this.workspace_.scale-this.MARGIN-Blockly.BlockSvg.TAB_WIDTH-e,0)),d.flyoutRect_&&this.moveRectToBlock_(d.flyoutRect_,d);if(this.RTL)for(c=0;d=this.buttons_[c];c++)b=d.getPosition().y,d.moveTo(a/this.workspace_.scale-d.width-this.MARGIN-Blockly.BlockSvg.TAB_WIDTH,b);this.width_=a;this.targetWorkspace_.resize()}};Blockly.Toolbox=function(a){this.workspace_=a;this.RTL=a.options.RTL;this.horizontalLayout_=a.options.horizontalLayout;this.toolboxPosition=a.options.toolboxPosition;this.config_={indentWidth:19,cssRoot:"blocklyTreeRoot",cssHideRoot:"blocklyHidden",cssItem:"",cssTreeRow:"blocklyTreeRow",cssItemLabel:"blocklyTreeLabel",cssExpandedFolderIcon:"blocklyTreeIconOpen",cssFileIcon:"blocklyTreeIconNone",cssSelectedRow:"blocklyTreeSelected"};this.treeSeparatorConfig_={cssTreeRow:"blocklyTreeSeparator"};this.horizontalLayout_&&
 (this.config_.cssTreeRow+=a.RTL?" blocklyHorizontalTreeRtl":" blocklyHorizontalTree",this.treeSeparatorConfig_.cssTreeRow="blocklyTreeSeparatorHorizontal "+(a.RTL?"blocklyHorizontalTreeRtl":"blocklyHorizontalTree"),this.config_.cssTreeIcon="")};Blockly.Toolbox.prototype.width=0;Blockly.Toolbox.prototype.height=0;Blockly.Toolbox.prototype.selectedOption_=null;Blockly.Toolbox.prototype.lastCategory_=null;
-Blockly.Toolbox.prototype.init=function(){var a=this.workspace_,b=this.workspace_.getParentSvg();this.HtmlDiv=goog.dom.createDom("DIV","blocklyToolboxDiv");this.HtmlDiv.setAttribute("dir",a.RTL?"RTL":"LTR");b.parentNode.insertBefore(this.HtmlDiv,b);Blockly.bindEventWithChecks_(this.HtmlDiv,"mousedown",this,function(a){Blockly.utils.isRightButton(a)||a.target==this.HtmlDiv?Blockly.hideChaff(!1):Blockly.hideChaff(!0);Blockly.Touch.clearTouchIdentifier()},!1,!0);b={disabledPatternId:a.options.disabledPatternId,
-parentWorkspace:a,RTL:a.RTL,oneBasedIndex:a.options.oneBasedIndex,horizontalLayout:a.horizontalLayout,toolboxPosition:a.options.toolboxPosition};this.flyout_=null;this.flyout_=a.horizontalLayout?new Blockly.HorizontalFlyout(b):new Blockly.VerticalFlyout(b);goog.dom.insertSiblingAfter(this.flyout_.createDom("svg"),this.workspace_.getParentSvg());this.flyout_.init(a);this.config_.cleardotPath=a.options.pathToMedia+"1x1.gif";this.config_.cssCollapsedFolderIcon="blocklyTreeIconClosed"+(a.RTL?"Rtl":"Ltr");
-this.tree_=b=new Blockly.Toolbox.TreeControl(this,this.config_);b.setShowRootNode(!1);b.setShowLines(!1);b.setShowExpandIcons(!1);b.setSelectedItem(null);a=this.populate_(a.options.languageTree);b.render(this.HtmlDiv);a&&b.setSelectedItem(a);this.addColour_();this.addBackground_();this.addIcon_();this.position()};Blockly.Toolbox.prototype.dispose=function(){this.flyout_.dispose();this.tree_.dispose();goog.dom.removeNode(this.HtmlDiv);this.lastCategory_=this.workspace_=null};
+Blockly.Toolbox.prototype.init = function() {
+    var a = this.workspace_,
+        b = this.workspace_.getParentSvg();
+    this.HtmlDiv = goog.dom.createDom("DIV", "blocklyToolboxDiv");
+    this.HtmlDiv.setAttribute("dir", a.RTL ? "RTL" : "LTR");
+    b.parentNode.insertBefore(this.HtmlDiv, b);
+    Blockly.bindEventWithChecks_(this.HtmlDiv, "mousedown", this, function(a) {
+        Blockly.utils.isRightButton(a) || a.target == this.HtmlDiv ? Blockly.hideChaff(!1) : Blockly.hideChaff(!0);
+        Blockly.Touch.clearTouchIdentifier()
+    }, !1, !0);
+    b = {
+        disabledPatternId: a.options.disabledPatternId,
+        parentWorkspace: a,
+        RTL: a.RTL,
+        oneBasedIndex: a.options.oneBasedIndex,
+        horizontalLayout: a.horizontalLayout,
+        toolboxPosition: a.options.toolboxPosition
+    };
+    this.flyout_ = null;
+    this.flyout_ = a.horizontalLayout ? new Blockly.HorizontalFlyout(b) : new Blockly.VerticalFlyout(b);
+    goog.dom.insertSiblingAfter(this.flyout_.createDom("svg"), this.workspace_.getParentSvg());
+    this.flyout_.init(a);
+    this.config_.cleardotPath = a.options.pathToMedia + "1x1.gif";
+    this.config_.cssCollapsedFolderIcon = "blocklyTreeIconClosed" + (a.RTL ? "Rtl" : "Ltr");
+    this.tree_ = b = new Blockly.Toolbox.TreeControl(this, this.config_);
+    b.setShowRootNode(!1);
+    b.setShowLines(!1);
+    b.setShowExpandIcons(!1);
+    b.setSelectedItem(null);
+    a = this.populate_(a.options.languageTree);
+    b.render(this.HtmlDiv);
+    a && b.setSelectedItem(a);
+    this.addColour_();
+    this.addBackground_();
+    this.addIcon_();
+    this.position()
+};
+Blockly.Toolbox.prototype.dispose = function() {
+    this.flyout_.dispose();
+    this.tree_.dispose();
+    goog.dom.removeNode(this.HtmlDiv);
+    this.lastCategory_ = this.workspace_ = null
+};
 Blockly.Toolbox.prototype.getWidth=function(){return this.width};Blockly.Toolbox.prototype.getHeight=function(){return this.height};
 Blockly.Toolbox.prototype.position=function(){var a=this.HtmlDiv;if(a){var b=this.workspace_.getParentSvg();b=Blockly.svgSize(b);this.horizontalLayout_?(a.style.left="0",a.style.height="auto",a.style.width=b.width+"px",this.height=a.offsetHeight,this.toolboxPosition==Blockly.TOOLBOX_AT_TOP?a.style.top="0":a.style.bottom="0"):(this.toolboxPosition==Blockly.TOOLBOX_AT_RIGHT?a.style.right="0":a.style.left="0",a.style.height=b.height+"px",this.width=a.offsetWidth);this.flyout_.position()}};
 Blockly.Toolbox.prototype.populate_=function(a){this.tree_.removeChildren();this.tree_.blocks=[];this.hasColours_=!1;a=this.syncTrees_(a,this.tree_,this.workspace_.options.pathToMedia);if(this.tree_.blocks.length)throw"Toolbox cannot have both blocks and categories in the root level.";this.workspace_.resizeContents();return a};
@@ -1700,9 +1756,62 @@ Blockly.Toolbox.prototype.syncTrees_=function(a,b,c){for(var d=null,e=null,f=0,g
 h=Blockly.utils.replaceMessageReferences(g.getAttribute("colour"));null===h||""===h?l.hexColour="":/^#[0-9a-fA-F]{6}$/.test(h)?(l.hexColour=h,this.hasColours_=!0):"number"===typeof h||"string"===typeof h&&!isNaN(Number(h))?(l.hexColour=Blockly.hueToRgb(Number(h)),this.hasColours_=!0):(l.hexColour="",console.warn('Toolbox category "'+e+'" has unrecognized colour attribute: '+h));"true"==g.getAttribute("expanded")?(l.blocks.length&&(d=l),l.setExpanded(!0)):l.setExpanded(!1);e=g;break;case "SEP":e&&
 ("CATEGORY"==e.tagName.toUpperCase()?b.add(new Blockly.Toolbox.TreeSeparator(this.treeSeparatorConfig_)):(g=parseFloat(g.getAttribute("gap")),!isNaN(g)&&e&&e.setAttribute("gap",g)));break;case "BLOCK":case "SHADOW":case "LABEL":case "BUTTON":b.blocks.push(g),e=g}return d};
 Blockly.Toolbox.prototype.addColour_=function(a){a=(a||this.tree_).getChildren(!1);for(var b=0,c;c=a[b];b++){var d=c.getRowElement();if(d){if(!this.hasColours_)var e="none";this.workspace_.RTL?d.style.borderRight=e:d.style.borderLeft=e}this.addColour_(c)}};Blockly.Toolbox.prototype.addBackground_=function(a){a=(a||this.tree_).getChildren(!1);for(var b=0,c;c=a[b];b++){var d=c.bg,e=c.getRowElement();e&&(e.style.backgroundImage=null==d||void 0==d?"":"url('"+d+"')");this.addBackground_(c)}};
-Blockly.Toolbox.prototype.addIcon_=function(a){a=(a||this.tree_).getChildren(!1);for(var b=0,c;c=a[b];b++){var d=c.icon,e=c.getRowElement();if(e&&null!=d&&void 0!=d){var f=e.getElementsByClassName(" blocklyTreeLabel")[0],g=document.createElement("div");g.className="divImg";g.style.display="inline-block";g.style.paddingLeft="10px";g.style.paddingRight="10px";g.style.backgroundColor="#00324C";e.insertBefore(g,f);f=document.createElement("div");f.className="divImg1";f.style.height="50px";g=document.createElement("div");
-g.className="blocklyTreeSeparator";g.style.borderBottomColor="#14597D";var h=c.getRowElement().getElementsByClassName("divImg")[0];h.appendChild(f);h.appendChild(g);f=h.getElementsByClassName("divImg1")[0];g=document.createElement("img");g.setAttribute("src",d);g.style.width="3em";g.style.verticalAlign="middle";f.appendChild(g);d=document.createElement("div");d.style.display="inline-block";d.style.verticalAlign="top";d.style.width="68%";d.style.paddingLeft="10px";d.style.paddingRight="10px";d.className=
-"divLabel";e.appendChild(d);d=document.createElement("div");d.className="divLabel1";d.style.height="50px";f=document.createElement("div");f.className="blocklyTreeSeparator";f.style.borderBottomColor="#B8EDFA";g=c.getRowElement().getElementsByClassName("divLabel")[0];g.appendChild(d);g.appendChild(f);d=g.getElementsByClassName("divLabel1")[0];e=e.getElementsByClassName(" blocklyTreeLabel")[0];e.style.paddingLeft="7px";e.style.paddingRight="20px";d.appendChild(e)}this.addIcon_(c)}};
+Blockly.Toolbox.prototype.addIcon_ = function(a) {
+    a = (a || this.tree_).getChildren(!1);
+    for (var b = 0, c; c = a[b]; b++) {
+        var d = c.icon,
+            e = c.getRowElement();
+        if (e && null != d && void 0 != d) {
+            var f = e.getElementsByClassName(" blocklyTreeLabel")[0],
+                g = document.createElement("div");
+            g.className = "divImg";
+            g.style.display = "inline-block";
+            g.style.paddingLeft = "10px";
+            g.style.paddingRight = "10px";
+            g.style.backgroundColor = "#00324C";
+            e.insertBefore(g, f);
+            f = document.createElement("div");
+            f.className = "divImg1";
+            f.style.height = "50px";
+            g = document.createElement("div");
+            g.className = "blocklyTreeSeparator";
+            g.style.borderBottomColor = "#14597D";
+            var h = c.getRowElement().getElementsByClassName("divImg")[0];
+            h.appendChild(f);
+            h.appendChild(g);
+            f = h.getElementsByClassName("divImg1")[0];
+            g = document.createElement("img");
+            g.setAttribute("src", d);
+            g.style.width = "3em";
+            g.style.verticalAlign = "middle";
+            f.appendChild(g);
+            d = document.createElement("div");
+            d.style.display = "inline-block";
+            d.style.verticalAlign = "top";
+            d.style.width = "68%";
+            d.style.paddingLeft = "10px";
+            d.style.paddingRight = "10px";
+            d.className =
+                "divLabel";
+            e.appendChild(d);
+            d = document.createElement("div");
+            d.className = "divLabel1";
+            d.style.height = "50px";
+            f = document.createElement("div");
+            f.className = "blocklyTreeSeparator";
+            f.style.borderBottomColor = "#B8EDFA";
+            g = c.getRowElement().getElementsByClassName("divLabel")[0];
+            g.appendChild(d);
+            g.appendChild(f);
+            d = g.getElementsByClassName("divLabel1")[0];
+            e = e.getElementsByClassName(" blocklyTreeLabel")[0];
+            e.style.paddingLeft = "7px";
+            e.style.paddingRight = "20px";
+            d.appendChild(e)
+        }
+        this.addIcon_(c)
+    }
+};
 Blockly.Toolbox.prototype.clearSelection=function(){this.tree_.setSelectedItem(null)};Blockly.Toolbox.prototype.addStyle=function(a){Blockly.utils.addClass(this.HtmlDiv,a)};Blockly.Toolbox.prototype.removeStyle=function(a){Blockly.utils.removeClass(this.HtmlDiv,a)};
 Blockly.Toolbox.prototype.getClientRect=function(){if(!this.HtmlDiv)return null;var a=this.HtmlDiv.getBoundingClientRect(),b=a.left,c=a.top,d=a.width;a=a.height;return this.toolboxPosition==Blockly.TOOLBOX_AT_LEFT?new goog.math.Rect(-1E7,-1E7,1E7+b+d,2E7):this.toolboxPosition==Blockly.TOOLBOX_AT_RIGHT?new goog.math.Rect(b,-1E7,1E7+d,2E7):this.toolboxPosition==Blockly.TOOLBOX_AT_TOP?new goog.math.Rect(-1E7,-1E7,2E7,1E7+c+a):new goog.math.Rect(0,c,2E7,1E7+d)};
 Blockly.Toolbox.prototype.refreshSelection=function(){var a=this.tree_.getSelectedItem();a&&a.blocks&&this.flyout_.show(a.blocks)};Blockly.Toolbox.TreeControl=function(a,b){this.toolbox_=a;goog.ui.tree.TreeControl.call(this,goog.html.SafeHtml.EMPTY,b)};goog.inherits(Blockly.Toolbox.TreeControl,goog.ui.tree.TreeControl);
