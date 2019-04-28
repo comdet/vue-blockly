@@ -1865,24 +1865,79 @@ Blockly.inject.bindDocumentEvents_=function(){Blockly.documentEventsBound_||(Blo
 Blockly.inject.loadSounds_=function(a,b){var c=b.getAudioManager();c.load([a+"click.mp3",a+"click.wav",a+"click.ogg"],"click");c.load([a+"disconnect.wav",a+"disconnect.mp3",a+"disconnect.ogg"],"disconnect");c.load([a+"delete.mp3",a+"delete.ogg",a+"delete.wav"],"delete");var d=[],e=function(){for(;d.length;)Blockly.unbindEvent_(d.pop());c.preload()};d.push(Blockly.bindEventWithChecks_(document,"mousemove",null,e,!0));d.push(Blockly.bindEventWithChecks_(document,"touchstart",null,e,!0))};
 Blockly.updateToolbox=function(a){console.warn("Deprecated call to Blockly.updateToolbox, use workspace.updateToolbox instead.");Blockly.getMainWorkspace().updateToolbox(a)};var CLOSURE_DEFINES={"goog.DEBUG":!1};Blockly.mainWorkspace=null;Blockly.selected=null;Blockly.draggingConnections_=[];Blockly.clipboardXml_=null;Blockly.clipboardSource_=null;Blockly.cache3dSupported_=null;Blockly.hueToRgb=function(a){return goog.color.hsvToHex(a,Blockly.HSV_SATURATION,255*Blockly.HSV_VALUE)};Blockly.svgSize=function(a){return{width:a.cachedWidth_,height:a.cachedHeight_}};Blockly.resizeSvgContents=function(a){a.resizeContents()};
 Blockly.svgResize=function(a){for(;a.options.parentWorkspace;)a=a.options.parentWorkspace;var b=a.getParentSvg(),c=b.parentNode;if(c){var d=c.offsetWidth;c=c.offsetHeight;b.cachedWidth_!=d&&(b.setAttribute("width",d+"px"),b.cachedWidth_=d);b.cachedHeight_!=c&&(b.setAttribute("height",c+"px"),b.cachedHeight_=c);a.resize()}};
-//remove crtl-z and ctrl-shift-z (undo and redo to use hot key on global only)
-Blockly.onKeyDown_ = function(a) {
-    if (!Blockly.mainWorkspace.options.readOnly && !Blockly.utils.isTargetInput(a)) {
-        var b = !1;
-        if (27 == a.keyCode) Blockly.hideChaff();
-        else if (8 == a.keyCode || 46 == a.keyCode) {
-            a.preventDefault();
-            if (Blockly.mainWorkspace.isDragging()) return;
-            Blockly.selected && Blockly.selected.isDeletable() && (b = !0)
-        } else if (a.altKey || a.ctrlKey || a.metaKey) {
-            if (Blockly.mainWorkspace.isDragging()) return;
-            Blockly.selected && Blockly.selected.isDeletable() && Blockly.selected.isMovable() && (67 == a.keyCode ? (Blockly.hideChaff(),
-                Blockly.copy_(Blockly.selected)) : 88 != a.keyCode || Blockly.selected.workspace.isFlyout || (Blockly.copy_(Blockly.selected), b = !0));
-            //86 == a.keyCode ? Blockly.clipboardXml_ && (Blockly.Events.setGroup(!0), a = Blockly.clipboardSource_, a.isFlyout && (a = a.targetWorkspace), a.paste(Blockly.clipboardXml_), Blockly.Events.setGroup(!1)) : 90 == a.keyCode && (Blockly.hideChaff(), Blockly.mainWorkspace.undo(a.shiftKey))
-        }	86 == a.keyCode ? Blockly.clipboardXml_ && (Blockly.Events.setGroup(!0), a = Blockly.clipboardSource_, a.isFlyout && (a = a.targetWorkspace), a.paste(Blockly.clipboardXml_), Blockly.Events.setGroup(!1)) : 90 == a.keyCode && (Blockly.hideChaff())
-        b && !Blockly.selected.workspace.isFlyout && (Blockly.Events.setGroup(!0), Blockly.hideChaff(), Blockly.selected.dispose(!0,
-            !0), Blockly.Events.setGroup(!1))
+//change ctrl-shift-z to ctrl-y to redo
+Blockly.onKeyDown_ = function(e) {
+  var workspace = Blockly.mainWorkspace;
+  if (workspace.options.readOnly || Blockly.utils.isTargetInput(e) ||
+      (workspace.rendered && !workspace.isVisible())) {
+    // No key actions on readonly workspaces.
+    // When focused on an HTML text input widget, don't trap any keys.
+    // Ignore keypresses on rendered workspaces that have been explicitly
+    // hidden.
+    return;
+  }
+  var deleteBlock = false;
+  if (e.keyCode == 27) {
+    // Pressing esc closes the context menu.
+    Blockly.hideChaff();
+  } else if (e.keyCode == 8 || e.keyCode == 46) {
+  	e.preventDefault();
+    // Don't delete while dragging.  Jeez.
+    if (Blockly.mainWorkspace.isDragging()) {
+      return;
     }
+    if (Blockly.selected && Blockly.selected.isDeletable()) {
+      deleteBlock = true;
+    }
+  } else if (e.altKey || e.ctrlKey || e.metaKey) {
+  	if (Blockly.mainWorkspace.isDragging()) {
+      return;
+    }
+    if (Blockly.selected &&
+        Blockly.selected.isDeletable() && Blockly.selected.isMovable()) {
+      if (e.keyCode == 67) {
+        // 'c' for copy.
+        Blockly.hideChaff();
+        Blockly.copy_(Blockly.selected);
+      } else if (e.keyCode == 88 && !Blockly.selected.workspace.isFlyout) {
+        // 'x' for cut, but not in a flyout.
+        // Don't even copy the selected item in the flyout.
+        Blockly.copy_(Blockly.selected);
+        deleteBlock = true;
+      }
+    }
+    if (e.keyCode == 86) {
+      //86 == a.keyCode ? Blockly.clipboardXml_ && 
+      //(Blockly.Events.setGroup(!0), a = Blockly.clipboardSource_, a.isFlyout && (a = a.targetWorkspace), a.paste(Blockly.clipboardXml_), Blockly.Events.setGroup(!1)) : 90 == a.keyCode && (Blockly.hideChaff(), Blockly.mainWorkspace.undo(a.shiftKey))
+      // 'v' for paste.
+      if (Blockly.clipboardXml_) {
+        Blockly.Events.setGroup(true);
+        var workspace = Blockly.clipboardSource_;
+        if (workspace.isFlyout) {
+          workspace = workspace.targetWorkspace;
+        }
+        workspace.paste(Blockly.clipboardXml_);
+        Blockly.Events.setGroup(false);
+      }
+    } else if (e.keyCode == 90) {
+      // 'z' for undo 'Z' is for redo.
+      Blockly.hideChaff();
+      workspace.undo(e.shiftKey);
+    } else if (e.keyCode == 89) {
+      // 'y' for redo
+      Blockly.hideChaff();
+      workspace.undo(true);
+    }
+  }
+  // Common code for delete and cut.
+  // Don't delete in the flyout.
+
+  if (deleteBlock && !Blockly.selected.workspace.isFlyout) {
+    Blockly.Events.setGroup(true);
+    Blockly.hideChaff();
+    Blockly.selected.dispose(/* heal */ true, true);
+    Blockly.Events.setGroup(false);
+  }
 };
 Blockly.copy_=function(a){if(a.isComment)var b=a.toXmlWithXY();else{b=Blockly.Xml.blockToDom(a);Blockly.Xml.deleteNext(b);var c=a.getRelativeToSurfaceXY();b.setAttribute("x",a.RTL?-c.x:c.x);b.setAttribute("y",c.y)}Blockly.clipboardXml_=b;Blockly.clipboardSource_=a.workspace};
 Blockly.duplicate_=function(a){var b=Blockly.clipboardXml_,c=Blockly.clipboardSource_;Blockly.copy_(a);a.workspace.paste(Blockly.clipboardXml_);Blockly.clipboardXml_=b;Blockly.clipboardSource_=c};Blockly.onContextMenu_=function(a){Blockly.utils.isTargetInput(a)||a.preventDefault()};Blockly.hideChaff=function(a){Blockly.Tooltip.hide();Blockly.WidgetDiv.hide();a||(a=Blockly.getMainWorkspace(),a.toolbox_&&a.toolbox_.flyout_&&a.toolbox_.flyout_.autoClose&&a.toolbox_.clearSelection())};
