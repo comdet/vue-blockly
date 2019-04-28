@@ -1867,8 +1867,7 @@ Blockly.svgResize=function(a){for(;a.options.parentWorkspace;)a=a.options.parent
 //change ctrl-shift-z to ctrl-y to redo
 Blockly.onKeyDown_ = function(e) {
   var workspace = Blockly.mainWorkspace;
-  if (workspace.options.readOnly || Blockly.utils.isTargetInput(e) ||
-      (workspace.rendered && !workspace.isVisible())) {
+  if (workspace.options.readOnly || Blockly.utils.isTargetInput(e)) {
     // No key actions on readonly workspaces.
     // When focused on an HTML text input widget, don't trap any keys.
     // Ignore keypresses on rendered workspaces that have been explicitly

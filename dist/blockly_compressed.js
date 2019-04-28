@@ -1865,11 +1865,11 @@ Blockly.inject.bindDocumentEvents_=function(){Blockly.documentEventsBound_||(Blo
 Blockly.inject.loadSounds_=function(a,b){var c=b.getAudioManager();c.load([a+"click.mp3",a+"click.wav",a+"click.ogg"],"click");c.load([a+"disconnect.wav",a+"disconnect.mp3",a+"disconnect.ogg"],"disconnect");c.load([a+"delete.mp3",a+"delete.ogg",a+"delete.wav"],"delete");var d=[],e=function(){for(;d.length;)Blockly.unbindEvent_(d.pop());c.preload()};d.push(Blockly.bindEventWithChecks_(document,"mousemove",null,e,!0));d.push(Blockly.bindEventWithChecks_(document,"touchstart",null,e,!0))};
 Blockly.updateToolbox=function(a){console.warn("Deprecated call to Blockly.updateToolbox, use workspace.updateToolbox instead.");Blockly.getMainWorkspace().updateToolbox(a)};var CLOSURE_DEFINES={"goog.DEBUG":!1};Blockly.mainWorkspace=null;Blockly.selected=null;Blockly.draggingConnections_=[];Blockly.clipboardXml_=null;Blockly.clipboardSource_=null;Blockly.cache3dSupported_=null;Blockly.hueToRgb=function(a){return goog.color.hsvToHex(a,Blockly.HSV_SATURATION,255*Blockly.HSV_VALUE)};Blockly.svgSize=function(a){return{width:a.cachedWidth_,height:a.cachedHeight_}};Blockly.resizeSvgContents=function(a){a.resizeContents()};
 Blockly.svgResize=function(a){for(;a.options.parentWorkspace;)a=a.options.parentWorkspace;var b=a.getParentSvg(),c=b.parentNode;if(c){var d=c.offsetWidth;c=c.offsetHeight;b.cachedWidth_!=d&&(b.setAttribute("width",d+"px"),b.cachedWidth_=d);b.cachedHeight_!=c&&(b.setAttribute("height",c+"px"),b.cachedHeight_=c);a.resize()}};
+//remove crtl-z and ctrl-shift-z (undo and redo to use hot key on global only)
 //change ctrl-shift-z to ctrl-y to redo
 Blockly.onKeyDown_ = function(e) {
   var workspace = Blockly.mainWorkspace;
-  if (workspace.options.readOnly || Blockly.utils.isTargetInput(e) ||
-      (workspace.rendered && !workspace.isVisible())) {
+  if (workspace.options.readOnly || Blockly.utils.isTargetInput(e)) {
     // No key actions on readonly workspaces.
     // When focused on an HTML text input widget, don't trap any keys.
     // Ignore keypresses on rendered workspaces that have been explicitly
