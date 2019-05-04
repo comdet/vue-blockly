@@ -1625,8 +1625,40 @@ this.sourceBlock_.getSvgRoot().appendChild(this.fieldGroup_),this.setTooltip(thi
 Blockly.FieldImage.prototype.setTooltip=function(a){this.imageElement_.tooltip=a};Blockly.FieldImage.prototype.getValue=function(){return this.src_};Blockly.FieldImage.prototype.setValue=function(a){null!==a&&(this.src_=a,this.imageElement_&&this.imageElement_.setAttributeNS("http://www.w3.org/1999/xlink","xlink:href",a||""))};Blockly.FieldImage.prototype.setText=function(a){null!==a&&(this.text_=a)};Blockly.FieldImage.prototype.render_=function(){};Blockly.FieldImage.prototype.forceRerender=function(){};
 Blockly.FieldImage.prototype.updateWidth=function(){};Blockly.FieldImage.prototype.showEditor_=function(){this.clickHandler_&&this.clickHandler_(this)};Blockly.Field.register("field_image",Blockly.FieldImage);Blockly.FieldNumber=function(a,b,c,d,e){a=a&&!isNaN(a)?String(a):"0";Blockly.FieldNumber.superClass_.constructor.call(this,a,e);this.setConstraints(b,c,d)};goog.inherits(Blockly.FieldNumber,Blockly.FieldTextInput);Blockly.FieldNumber.fromJson=function(a){return new Blockly.FieldNumber(a.value,a.min,a.max,a.precision)};
 Blockly.FieldNumber.prototype.setConstraints=function(a,b,c){c=parseFloat(c);this.precision_=isNaN(c)?0:c;a=parseFloat(a);this.min_=isNaN(a)?-Infinity:a;b=parseFloat(b);this.max_=isNaN(b)?Infinity:b;this.setValue(this.callValidator(this.getValue()))};
-Blockly.FieldNumber.prototype.classValidator=function(a){if(null===a)return null;a=String(a);a=a.replace(/O/ig,"0");a=a.replace(/,/g,"");a=parseFloat(a||0);if(isNaN(a))return null;this.precision_&&isFinite(a)&&(a=(Math.round(a/this.precision_)*this.precision_).toFixed(-1==String(this.precision_).indexOf(".")?0:String(this.precision_).split(".")[1].length));a=goog.math.clamp(a,this.min_,this.max_);return String(a)};Blockly.Field.register("field_number",Blockly.FieldNumber);Blockly.FieldVariable=function(a,b,c,d){this.menuGenerator_=Blockly.FieldVariable.dropdownCreate;this.size_=new goog.math.Size(0,Blockly.BlockSvg.MIN_BLOCK_Y);this.setValidator(b);this.defaultVariableName=a||"";this.setTypes_(c,d);this.value_=null};goog.inherits(Blockly.FieldVariable,Blockly.FieldDropdown);Blockly.FieldVariable.fromJson=function(a){var b=Blockly.utils.replaceMessageReferences(a.variable);return new Blockly.FieldVariable(b,null,a.variableTypes,a.defaultType)};
-Blockly.FieldVariable.prototype.init=function(){this.fieldGroup_||(Blockly.FieldVariable.superClass_.init.call(this),this.initModel())};Blockly.FieldVariable.prototype.initModel=function(){if(!this.variable_){this.workspace_=this.sourceBlock_.workspace;var a=Blockly.Variables.getOrCreateVariablePackage(this.workspace_,null,this.defaultVariableName,this.defaultType_);Blockly.Events.disable();try{this.setValue(a.getId())}finally{Blockly.Events.enable()}}};
+Blockly.FieldNumber.prototype.classValidator=function(a){if(null===a)return null;a=String(a);a=a.replace(/O/ig,"0");a=a.replace(/,/g,"");a=parseFloat(a||0);if(isNaN(a))return null;this.precision_&&isFinite(a)&&(a=(Math.round(a/this.precision_)*this.precision_).toFixed(-1==String(this.precision_).indexOf(".")?0:String(this.precision_).split(".")[1].length));a=goog.math.clamp(a,this.min_,this.max_);return String(a)};Blockly.Field.register("field_number",Blockly.FieldNumber);
+Blockly.FieldVariable = function(varname, opt_validator, opt_variableTypes,opt_defaultType,custom_Workspace){
+    this.menuGenerator_ = Blockly.FieldVariable.dropdownCreate;
+    this.size_ = new goog.math.Size(0, Blockly.BlockSvg.MIN_BLOCK_Y);
+    this.setValidator(opt_validator);
+    this.defaultVariableName = varname || "";
+    this.setTypes_(opt_variableTypes, opt_defaultType);
+    this.value_ = null
+    if(custom_Workspace){
+    	this.workspace_ = custom_Workspace;
+    }
+};
+goog.inherits(Blockly.FieldVariable, Blockly.FieldDropdown);
+Blockly.FieldVariable.fromJson = function(a) {
+    var b = Blockly.utils.replaceMessageReferences(a.variable);
+    return new Blockly.FieldVariable(b, null, a.variableTypes, a.defaultType)
+};
+Blockly.FieldVariable.prototype.init = function() {
+    this.fieldGroup_ || (Blockly.FieldVariable.superClass_.init.call(this), this.initModel())
+};
+Blockly.FieldVariable.prototype.initModel = function() {
+    if (!this.variable_) {
+    	if(!this.workspace_){
+    		this.workspace_ = this.sourceBlock_.workspace;	
+    	}
+        var a = Blockly.Variables.getOrCreateVariablePackage(this.workspace_, null, this.defaultVariableName, this.defaultType_);
+        Blockly.Events.disable();
+        try {
+            this.setValue(a.getId())
+        } finally {
+            Blockly.Events.enable()
+        }
+    }
+};
 Blockly.FieldVariable.prototype.dispose=function(){Blockly.FieldVariable.superClass_.dispose.call(this);this.variableMap_=this.workspace_=null};Blockly.FieldVariable.prototype.setSourceBlock=function(a){goog.asserts.assert(!a.isShadow(),"Variable fields are not allowed to exist on shadow blocks.");Blockly.FieldVariable.superClass_.setSourceBlock.call(this,a)};Blockly.FieldVariable.prototype.getValue=function(){return this.variable_?this.variable_.getId():null};
 Blockly.FieldVariable.prototype.getText=function(){return this.variable_?this.variable_.name:""};Blockly.FieldVariable.prototype.getVariable=function(){return this.variable_};
 Blockly.FieldVariable.prototype.setValue=function(a){var b=Blockly.Variables.getVariable(this.sourceBlock_.workspace,a);if(!b)throw Error("Variable id doesn't point to a real variable!  ID was "+a);var c=b.type;if(!this.typeIsAllowed_(c))throw Error("Variable type doesn't match this field!  Type was "+c);this.sourceBlock_&&Blockly.Events.isEnabled()&&(c=this.variable_?this.variable_.getId():null,Blockly.Events.fire(new Blockly.Events.BlockChange(this.sourceBlock_,"field",this.name,c,a)));this.variable_=
