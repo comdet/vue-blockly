@@ -1654,23 +1654,187 @@ Blockly.FieldColour.prototype.showEditor_=function(){Blockly.WidgetDiv.show(this
 e.sourceBlock_&&(a=e.callValidator(a));null!==a&&e.setValue(a)})};Blockly.FieldColour.prototype.createWidget_=function(){var a=new goog.ui.ColorPicker;a.setSize(this.columns_||Blockly.FieldColour.COLUMNS);a.setColors(this.colours_||Blockly.FieldColour.COLOURS);a.render(Blockly.WidgetDiv.DIV);a.setSelectedColor(this.getValue());return a};Blockly.FieldColour.widgetDispose_=function(){Blockly.FieldColour.changeEventKey_&&goog.events.unlistenByKey(Blockly.FieldColour.changeEventKey_);Blockly.Events.setGroup(!1)};
 Blockly.Field.register("field_colour",Blockly.FieldColour);Blockly.FieldDropdown=function(a,b){goog.isFunction(a)||Blockly.FieldDropdown.validateOptions_(a);this.menuGenerator_=a;this.trimOptions_();var c=this.getOptions()[0];Blockly.FieldDropdown.superClass_.constructor.call(this,c[1],b)};goog.inherits(Blockly.FieldDropdown,Blockly.Field);Blockly.FieldDropdown.fromJson=function(a){return new Blockly.FieldDropdown(a.options)};Blockly.FieldDropdown.CHECKMARK_OVERHANG=25;Blockly.FieldDropdown.MAX_MENU_HEIGHT_VH=.45;
 Blockly.FieldDropdown.ARROW_CHAR=goog.userAgent.ANDROID?"\u25bc":"\u25be";Blockly.FieldDropdown.prototype.CURSOR="default";Blockly.FieldDropdown.prototype.value_="";Blockly.FieldDropdown.prototype.imageElement_=null;Blockly.FieldDropdown.prototype.imageJson_=null;
-Blockly.FieldDropdown.prototype.init=function(){this.fieldGroup_||(this.arrow_=Blockly.utils.createSvgElement("tspan",{},null),this.arrow_.appendChild(document.createTextNode(this.sourceBlock_.RTL?Blockly.FieldDropdown.ARROW_CHAR+" ":" "+Blockly.FieldDropdown.ARROW_CHAR)),Blockly.FieldDropdown.superClass_.init.call(this))};Blockly.FieldDropdown.prototype.showEditor_=function(){Blockly.WidgetDiv.show(this,this.sourceBlock_.RTL,null);var a=this.createMenu_();this.addActionListener_(a);this.positionMenu_(a)};
-Blockly.FieldDropdown.prototype.addActionListener_=function(a){var b=this;goog.events.listen(a,goog.ui.Component.EventType.ACTION,function(a){if(a=a.target)b.onItemSelected(this,a);Blockly.WidgetDiv.hideIfOwner(b);Blockly.Events.setGroup(!1)})};
-Blockly.FieldDropdown.prototype.createMenu_=function(){var a=new goog.ui.Menu;a.setRightToLeft(this.sourceBlock_.RTL);for(var b=this.getOptions(),c=0;c<b.length;c++){var d=b[c][0],e=b[c][1];if("object"==typeof d){var f=new Image(d.width,d.height);f.src=d.src;f.alt=d.alt||"";d=f}d=new goog.ui.MenuItem(d);d.setRightToLeft(this.sourceBlock_.RTL);d.setValue(e);d.setCheckable(!0);a.addChild(d,!0);d.setChecked(e==this.value_)}return a};
-Blockly.FieldDropdown.prototype.positionMenu_=function(a){var b=Blockly.utils.getViewportBBox(),c=this.getAnchorDimensions_();this.createWidget_(a);var d=Blockly.utils.uiMenu.getSize(a),e=Blockly.FieldDropdown.MAX_MENU_HEIGHT_VH*document.documentElement.clientHeight;d.height>e&&(d.height=e);this.sourceBlock_.RTL&&Blockly.utils.uiMenu.adjustBBoxesForRTL(b,c,d);Blockly.WidgetDiv.positionWithAnchor(b,c,d,this.sourceBlock_.RTL);a.getElement().focus()};
-Blockly.FieldDropdown.prototype.createWidget_=function(a){a.render(Blockly.WidgetDiv.DIV);Blockly.utils.addClass(a.getElement(),"blocklyDropdownMenu");a.setAllowAutoFocus(!0)};Blockly.FieldDropdown.prototype.getAnchorDimensions_=function(){var a=this.getScaledBBox_();this.sourceBlock_.RTL?a.right+=Blockly.FieldDropdown.CHECKMARK_OVERHANG:a.left-=Blockly.FieldDropdown.CHECKMARK_OVERHANG;return a};
-Blockly.FieldDropdown.prototype.onItemSelected=function(a,b){var c=b.getValue();this.sourceBlock_&&(c=this.callValidator(c));null!==c&&this.setValue(c)};
-Blockly.FieldDropdown.prototype.trimOptions_=function(){this.suffixField=this.prefixField=null;var a=this.menuGenerator_;if(goog.isArray(a)){for(var b=!1,c=0;c<a.length;c++){var d=a[c][0];"string"==typeof d?a[c][0]=Blockly.utils.replaceMessageReferences(d):(null!=d.alt&&(a[c][0].alt=Blockly.utils.replaceMessageReferences(d.alt)),b=!0)}if(!(b||2>a.length)){b=[];for(c=0;c<a.length;c++)b.push(a[c][0]);c=Blockly.utils.shortestStringLength(b);d=Blockly.utils.commonWordPrefix(b,c);var e=Blockly.utils.commonWordSuffix(b,
-c);!d&&!e||c<=d+e||(d&&(this.prefixField=b[0].substring(0,d-1)),e&&(this.suffixField=b[0].substr(1-e)),this.menuGenerator_=Blockly.FieldDropdown.applyTrim_(a,d,e))}}};Blockly.FieldDropdown.applyTrim_=function(a,b,c){for(var d=[],e=0;e<a.length;e++){var f=a[e][0],g=a[e][1];f=f.substring(b,f.length-c);d[e]=[f,g]}return d};Blockly.FieldDropdown.prototype.isOptionListDynamic=function(){return goog.isFunction(this.menuGenerator_)};
-Blockly.FieldDropdown.prototype.getOptions=function(){if(goog.isFunction(this.menuGenerator_)){var a=this.menuGenerator_.call(this);Blockly.FieldDropdown.validateOptions_(a);return a}return this.menuGenerator_};Blockly.FieldDropdown.prototype.getValue=function(){return this.value_};
-Blockly.FieldDropdown.prototype.setValue=function(a){if(null!==a&&a!==this.value_){this.sourceBlock_&&Blockly.Events.isEnabled()&&Blockly.Events.fire(new Blockly.Events.BlockChange(this.sourceBlock_,"field",this.name,this.value_,a));this.value_=a;for(var b=this.getOptions(),c=0;c<b.length;c++)if(b[c][1]==a){a=b[c][0];"object"==typeof a?(this.imageJson_=a,this.text_=a.alt):(this.imageJson_=null,this.text_=a);this.forceRerender();return}this.text_=a;this.forceRerender()}};
-Blockly.FieldDropdown.prototype.render_=function(){this.visible_?(this.sourceBlock_&&this.arrow_&&(this.arrow_.style.fill=this.sourceBlock_.getColour()),goog.dom.removeChildren(this.textElement_),goog.dom.removeNode(this.imageElement_),this.imageElement_=null,this.imageJson_?this.renderSelectedImage_():this.renderSelectedText_(),this.borderRect_.setAttribute("height",this.size_.height-9),this.borderRect_.setAttribute("width",this.size_.width+Blockly.BlockSvg.SEP_SPACE_X)):this.size_.width=0};
-Blockly.FieldDropdown.prototype.renderSelectedImage_=function(){this.imageElement_=Blockly.utils.createSvgElement("image",{y:5,height:this.imageJson_.height+"px",width:this.imageJson_.width+"px"},this.fieldGroup_);this.imageElement_.setAttributeNS("http://www.w3.org/1999/xlink","xlink:href",this.imageJson_.src);this.textElement_.appendChild(this.arrow_);var a=Blockly.Field.getCachedWidth(this.arrow_);this.size_.height=Number(this.imageJson_.height)+19;this.size_.width=Number(this.imageJson_.width)+
-a;this.sourceBlock_.RTL?(this.imageElement_.setAttribute("x",a),this.textElement_.setAttribute("x",-1)):(this.textElement_.setAttribute("text-anchor","end"),this.textElement_.setAttribute("x",this.size_.width+1))};
-Blockly.FieldDropdown.prototype.renderSelectedText_=function(){var a=document.createTextNode(this.getDisplayText_());this.textElement_.appendChild(a);this.sourceBlock_.RTL?this.textElement_.insertBefore(this.arrow_,this.textElement_.firstChild):this.textElement_.appendChild(this.arrow_);this.textElement_.setAttribute("text-anchor","start");this.textElement_.setAttribute("x",0);this.size_.height=Blockly.BlockSvg.MIN_BLOCK_Y;this.size_.width=Blockly.Field.getCachedWidth(this.textElement_)};
-Blockly.FieldDropdown.prototype.updateWidth=function(){if(this.imageJson_&&(goog.userAgent.IE||goog.userAgent.EDGE)){var a=Blockly.Field.getCachedWidth(this.arrow_);a=Number(this.imageJson_.width)+a+Blockly.BlockSvg.SEP_SPACE_X;this.borderRect_&&this.borderRect_.setAttribute("width",a);this.size_.width=a}else Blockly.Field.prototype.updateWidth.call(this)};Blockly.FieldDropdown.prototype.dispose=function(){Blockly.WidgetDiv.hideIfOwner(this);Blockly.FieldDropdown.superClass_.dispose.call(this)};
-Blockly.FieldDropdown.validateOptions_=function(a){if(!goog.isArray(a))throw"FieldDropdown options must be an array.";for(var b=!1,c=0;c<a.length;++c){var d=a[c];goog.isArray(a)?goog.isString(d[1])?goog.isString(d[0])||goog.isString(d[0].src)||(b=!0,console.error("Invalid option["+c+"]: Each FieldDropdown option must have a string label or image description. Found"+d[0]+" in: ",d)):(b=!0,console.error("Invalid option["+c+"]: Each FieldDropdown option id must be a string. Found "+d[1]+" in: ",d)):
-(b=!0,console.error("Invalid option["+c+"]: Each FieldDropdown option must be an array. Found: ",d))}if(b)throw"Found invalid FieldDropdown options.";};Blockly.Field.register("field_dropdown",Blockly.FieldDropdown);Blockly.FieldImage=function(a,b,c,d,e,f){this.sourceBlock_=null;this.height_=Number(c);this.width_=Number(b);this.size_=new goog.math.Size(this.width_,this.height_+2*Blockly.BlockSvg.INLINE_PADDING_Y);this.text_=d||"";this.setValue(a);"function"==typeof e&&(this.clickHandler_=e);this.clickImage_=!1;"undefined"!=typeof f&&(this.clickImage_=f)};goog.inherits(Blockly.FieldImage,Blockly.Field);
+Blockly.FieldDropdown.prototype.init = function() {
+    this.fieldGroup_ || (this.arrow_ = Blockly.utils.createSvgElement("tspan", {}, null), this.arrow_.appendChild(document.createTextNode(this.sourceBlock_.RTL ? Blockly.FieldDropdown.ARROW_CHAR + " " : " " + Blockly.FieldDropdown.ARROW_CHAR)), Blockly.FieldDropdown.superClass_.init.call(this))
+};
+Blockly.FieldDropdown.prototype.showEditor_ = function() {
+    Blockly.WidgetDiv.show(this, this.sourceBlock_.RTL, null);
+    var a = this.createMenu_();
+    this.addActionListener_(a);
+    this.positionMenu_(a)
+};
+Blockly.FieldDropdown.prototype.addActionListener_ = function(a) {
+    var b = this;
+    goog.events.listen(a, goog.ui.Component.EventType.ACTION, function(a) {
+        if (a = a.target) b.onItemSelected(this, a);
+        Blockly.WidgetDiv.hideIfOwner(b);
+        Blockly.Events.setGroup(!1)
+    })
+};
+Blockly.FieldDropdown.prototype.createMenu_ = function() {
+    var a = new goog.ui.Menu;
+    a.setRightToLeft(this.sourceBlock_.RTL);
+    for (var b = this.getOptions(), c = 0; c < b.length; c++) {
+        var d = b[c][0],
+            e = b[c][1];
+        if ("object" == typeof d) {
+            var f = new Image(d.width, d.height);
+            f.src = d.src;
+            f.alt = d.alt || "";
+            d = f
+        }
+        d = new goog.ui.MenuItem(d);
+        d.setRightToLeft(this.sourceBlock_.RTL);
+        d.setValue(e);
+        d.setCheckable(!0);
+        a.addChild(d, !0);
+        d.setChecked(e == this.value_)
+    }
+    return a
+};
+Blockly.FieldDropdown.prototype.positionMenu_ = function(a) {
+    var b = Blockly.utils.getViewportBBox(),
+        c = this.getAnchorDimensions_();
+    this.createWidget_(a);
+    var d = Blockly.utils.uiMenu.getSize(a),
+        e = Blockly.FieldDropdown.MAX_MENU_HEIGHT_VH * document.documentElement.clientHeight;
+    d.height > e && (d.height = e);
+    this.sourceBlock_.RTL && Blockly.utils.uiMenu.adjustBBoxesForRTL(b, c, d);
+    Blockly.WidgetDiv.positionWithAnchor(b, c, d, this.sourceBlock_.RTL);
+    a.getElement().focus()
+};
+Blockly.FieldDropdown.prototype.createWidget_ = function(a) {
+    a.render(Blockly.WidgetDiv.DIV);
+    Blockly.utils.addClass(a.getElement(), "blocklyDropdownMenu");
+    a.setAllowAutoFocus(!0)
+};
+Blockly.FieldDropdown.prototype.getAnchorDimensions_ = function() {
+    var a = this.getScaledBBox_();
+    this.sourceBlock_.RTL ? a.right += Blockly.FieldDropdown.CHECKMARK_OVERHANG : a.left -= Blockly.FieldDropdown.CHECKMARK_OVERHANG;
+    return a
+};
+Blockly.FieldDropdown.prototype.onItemSelected = function(a, b) {
+    var c = b.getValue();
+    this.sourceBlock_ && (c = this.callValidator(c));
+    null !== c && this.setValue(c)
+};
+Blockly.FieldDropdown.prototype.trimOptions_ = function() {
+    this.suffixField = this.prefixField = null;
+    var a = this.menuGenerator_;
+    if (goog.isArray(a)) {
+        for (var b = !1, c = 0; c < a.length; c++) {
+            var d = a[c][0];
+            "string" == typeof d ? a[c][0] = Blockly.utils.replaceMessageReferences(d) : (null != d.alt && (a[c][0].alt = Blockly.utils.replaceMessageReferences(d.alt)), b = !0)
+        }
+        if (!(b || 2 > a.length)) {
+            b = [];
+            for (c = 0; c < a.length; c++) b.push(a[c][0]);
+            c = Blockly.utils.shortestStringLength(b);
+            d = Blockly.utils.commonWordPrefix(b, c);
+            var e = Blockly.utils.commonWordSuffix(b,
+                c);
+            !d && !e || c <= d + e || (d && (this.prefixField = b[0].substring(0, d - 1)), e && (this.suffixField = b[0].substr(1 - e)), this.menuGenerator_ = Blockly.FieldDropdown.applyTrim_(a, d, e))
+        }
+    }
+};
+Blockly.FieldDropdown.applyTrim_ = function(a, b, c) {
+    for (var d = [], e = 0; e < a.length; e++) {
+        var f = a[e][0],
+            g = a[e][1];
+        f = f.substring(b, f.length - c);
+        d[e] = [f, g]
+    }
+    return d
+};
+Blockly.FieldDropdown.prototype.isOptionListDynamic = function() {
+    return goog.isFunction(this.menuGenerator_)
+};
+Blockly.FieldDropdown.prototype.getOptions = function() {
+    if (goog.isFunction(this.menuGenerator_)) {
+        var a = this.menuGenerator_.call(this);
+        Blockly.FieldDropdown.validateOptions_(a);
+        return a
+    }
+    return this.menuGenerator_
+};
+Blockly.FieldDropdown.prototype.getValue = function() {
+    return this.value_
+};
+Blockly.FieldDropdown.prototype.setValue = function(a) {
+    if (null !== a && a !== this.value_) {
+        this.sourceBlock_ && Blockly.Events.isEnabled() && Blockly.Events.fire(new Blockly.Events.BlockChange(this.sourceBlock_, "field", this.name, this.value_, a));
+        this.value_ = a;
+        for (var b = this.getOptions(), c = 0; c < b.length; c++)
+            if (b[c][1] == a) {
+                a = b[c][0];
+                "object" == typeof a ? (this.imageJson_ = a, this.text_ = a.alt) : (this.imageJson_ = null, this.text_ = a);
+                this.forceRerender();
+                return
+            } this.text_ = a;
+        this.forceRerender()
+    }
+};
+Blockly.FieldDropdown.prototype.render_ = function() {
+    this.visible_ ? (this.sourceBlock_ && this.arrow_ && (this.arrow_.style.fill = this.sourceBlock_.getColour()), goog.dom.removeChildren(this.textElement_), goog.dom.removeNode(this.imageElement_), this.imageElement_ = null, this.imageJson_ ? this.renderSelectedImage_() : this.renderSelectedText_(), this.borderRect_.setAttribute("height", this.size_.height - 9), this.borderRect_.setAttribute("width", this.size_.width + Blockly.BlockSvg.SEP_SPACE_X)) : this.size_.width = 0
+};
+Blockly.FieldDropdown.prototype.renderSelectedImage_ = function() {
+    this.imageElement_ = Blockly.utils.createSvgElement("image", {
+        y: 5,
+        height: this.imageJson_.height + "px",
+        width: this.imageJson_.width + "px"
+    }, this.fieldGroup_);
+    this.imageElement_.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", this.imageJson_.src);
+    this.textElement_.appendChild(this.arrow_);
+    var a = Blockly.Field.getCachedWidth(this.arrow_);
+    this.size_.height = Number(this.imageJson_.height) + 19;
+    this.size_.width = Number(this.imageJson_.width) +
+        a;
+    this.sourceBlock_.RTL ? (this.imageElement_.setAttribute("x", a), this.textElement_.setAttribute("x", -1)) : (this.textElement_.setAttribute("text-anchor", "end"), this.textElement_.setAttribute("x", this.size_.width + 1))
+};
+Blockly.FieldDropdown.prototype.renderSelectedText_ = function() {
+    var a = document.createTextNode(this.getDisplayText_());
+    this.textElement_.appendChild(a);
+    this.sourceBlock_.RTL ? this.textElement_.insertBefore(this.arrow_, this.textElement_.firstChild) : this.textElement_.appendChild(this.arrow_);
+    this.textElement_.setAttribute("text-anchor", "start");
+    this.textElement_.setAttribute("x", 0);
+    this.size_.height = Blockly.BlockSvg.MIN_BLOCK_Y;
+    this.size_.width = Blockly.Field.getCachedWidth(this.textElement_)
+};
+Blockly.FieldDropdown.prototype.updateWidth = function() {
+    if (this.imageJson_ && (goog.userAgent.IE || goog.userAgent.EDGE)) {
+        var a = Blockly.Field.getCachedWidth(this.arrow_);
+        a = Number(this.imageJson_.width) + a + Blockly.BlockSvg.SEP_SPACE_X;
+        this.borderRect_ && this.borderRect_.setAttribute("width", a);
+        this.size_.width = a
+    } else Blockly.Field.prototype.updateWidth.call(this)
+};
+Blockly.FieldDropdown.prototype.dispose = function() {
+    Blockly.WidgetDiv.hideIfOwner(this);
+    Blockly.FieldDropdown.superClass_.dispose.call(this)
+};
+Blockly.FieldDropdown.validateOptions_ = function(a) {
+    if (!goog.isArray(a)) throw "FieldDropdown options must be an array.";
+    for (var b = !1, c = 0; c < a.length; ++c) {
+        var d = a[c];
+        goog.isArray(a) ? goog.isString(d[1]) ? goog.isString(d[0]) || goog.isString(d[0].src) || (b = !0, console.error("Invalid option[" + c + "]: Each FieldDropdown option must have a string label or image description. Found" + d[0] + " in: ", d)) : (b = !0, console.error("Invalid option[" + c + "]: Each FieldDropdown option id must be a string. Found " + d[1] + " in: ", d)) :
+            (b = !0, console.error("Invalid option[" + c + "]: Each FieldDropdown option must be an array. Found: ", d))
+    }
+    if (b) throw "Found invalid FieldDropdown options.";
+};
+Blockly.Field.register("field_dropdown", Blockly.FieldDropdown);
+
+Blockly.FieldImage = function(a, b, c, d, e, f) {
+    this.sourceBlock_ = null;
+    this.height_ = Number(c);
+    this.width_ = Number(b);
+    this.size_ = new goog.math.Size(this.width_, this.height_ + 2 * Blockly.BlockSvg.INLINE_PADDING_Y);
+    this.text_ = d || "";
+    this.setValue(a);
+    "function" == typeof e && (this.clickHandler_ = e);
+    this.clickImage_ = !1;
+    "undefined" != typeof f && (this.clickImage_ = f)
+};
+goog.inherits(Blockly.FieldImage, Blockly.Field);
 Blockly.FieldImage.fromJson=function(a){var b=Blockly.utils.replaceMessageReferences(a.src),c=Number(Blockly.utils.replaceMessageReferences(a.width)),d=Number(Blockly.utils.replaceMessageReferences(a.height));a=Blockly.utils.replaceMessageReferences(a.alt);return new Blockly.FieldImage(b,c,d,a)};Blockly.FieldImage.prototype.EDITABLE=!1;
 Blockly.FieldImage.prototype.init=function(){this.fieldGroup_||(this.fieldGroup_=Blockly.utils.createSvgElement("g",{},null),this.visible_||(this.fieldGroup_.style.display="none"),this.clickImage_&&(Blockly.utils.addClass(this.fieldGroup_,"clickableIcon"),/*Blockly.utils.addClass(this.fieldGroup_,"blocklyIconGroup"),Blockly.utils.addClass(this.fieldGroup_,"blocklyIconFading"),*/Blockly.FieldImage.prototype.EDITABLE=!0),this.imageElement_=Blockly.utils.createSvgElement("image",{height:this.height_+"px",width:this.width_+"px"},this.fieldGroup_),this.setValue(this.src_),
 this.sourceBlock_.getSvgRoot().appendChild(this.fieldGroup_),this.setTooltip(this.sourceBlock_),Blockly.Tooltip.bindMouseEvents(this.imageElement_),this.maybeAddClickHandler_())};Blockly.FieldImage.prototype.dispose=function(){goog.dom.removeNode(this.fieldGroup_);this.imageElement_=this.fieldGroup_=null};Blockly.FieldImage.prototype.maybeAddClickHandler_=function(){this.clickHandler_&&(this.mouseDownWrapper_=Blockly.bindEventWithChecks_(this.fieldGroup_,"mousedown",this,this.onMouseDown_))};
