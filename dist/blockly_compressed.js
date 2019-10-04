@@ -1234,7 +1234,44 @@ Blockly.Trashcan.prototype.position=function(){var a=this.workspace_.getMetrics(
 a.absoluteTop-(this.BODY_HEIGHT_+this.LID_HEIGHT_)-this.bottom_,a.toolboxPosition==Blockly.TOOLBOX_AT_BOTTOM&&(this.top_-=a.flyoutHeight),this.svgGroup_.setAttribute("transform","translate("+this.left_+","+this.top_+")"))};
 Blockly.Trashcan.prototype.getClientRect=function(){if(!this.svgGroup_)return null;var a=this.svgGroup_.getBoundingClientRect();return new goog.math.Rect(a.left+this.SPRITE_LEFT_-this.MARGIN_HOTSPOT_,a.top+this.SPRITE_TOP_-this.MARGIN_HOTSPOT_,this.WIDTH_+2*this.MARGIN_HOTSPOT_,this.LID_HEIGHT_+this.BODY_HEIGHT_+2*this.MARGIN_HOTSPOT_)};Blockly.Trashcan.prototype.setOpen_=function(a){this.isOpen!=a&&(clearTimeout(this.lidTask_),this.isOpen=a,this.animateLid_())};
 Blockly.Trashcan.prototype.animateLid_=function(){this.lidOpen_+=this.isOpen?.2:-.2;this.lidOpen_=goog.math.clamp(this.lidOpen_,0,1);var a=45*this.lidOpen_;this.svgLid_.setAttribute("transform","rotate("+(this.workspace_.RTL?-a:a)+","+(this.workspace_.RTL?4:this.WIDTH_-4)+","+(this.LID_HEIGHT_-2)+")");a=goog.math.lerp(1,.6,this.lidOpen_);this.svgGroup_.style.opacity=a;0<this.lidOpen_&&1>this.lidOpen_&&(this.lidTask_=setTimeout(this.animateLid_.bind(this),20))};Blockly.Trashcan.prototype.close=function(){this.setOpen_(!1)};
-Blockly.Trashcan.prototype.click=function(){var a=this.workspace_.startScrollX-this.workspace_.scrollX,b=this.workspace_.startScrollY-this.workspace_.scrollY;Math.sqrt(a*a+b*b)>Blockly.DRAG_RADIUS||console.log("TODO: Inspect trash.")};Blockly.VariableModel=function(a,b,c,d){this.workspace=a;this.name=b;this.type=c||"";this.id_=d||Blockly.utils.genUid();Blockly.Events.fire(new Blockly.Events.VarCreate(this))};Blockly.VariableModel.prototype.getId=function(){return this.id_};Blockly.VariableModel.compareByName=function(a,b){return goog.string.caseInsensitiveCompare(a.name,b.name)};Blockly.Variables={};Blockly.Variables.NAME_TYPE=Blockly.VARIABLE_CATEGORY_NAME;Blockly.Variables.allUsedVarModels=function(a){var b=a.getAllBlocks();a=Object.create(null);for(var c=0;c<b.length;c++){var d=b[c].getVarModels();if(d)for(var e=0;e<d.length;e++){var f=d[e];f.getId()&&(a[f.getId()]=f)}}b=[];for(var g in a)b.push(a[g]);return b};Blockly.Variables.allUsedVariables=function(){console.warn("Deprecated call to Blockly.Variables.allUsedVariables. Use Blockly.Variables.allUsedVarModels instead.\nIf this is a major issue please file a bug on GitHub.")};
+Blockly.Trashcan.prototype.click = function() {
+    var a = this.workspace_.startScrollX - this.workspace_.scrollX,
+        b = this.workspace_.startScrollY - this.workspace_.scrollY;
+    Math.sqrt(a * a + b * b) > Blockly.DRAG_RADIUS || console.log("TODO: Inspect trash.")
+};
+Blockly.VariableModel = function(a, b, c, d) {
+    this.workspace = a;
+    this.name = b;
+    this.type = c || "";
+    this.id_ = d || Blockly.utils.genUid();
+    Blockly.Events.fire(new Blockly.Events.VarCreate(this))
+};
+Blockly.VariableModel.prototype.getId = function() {
+    return this.id_
+};
+Blockly.VariableModel.compareByName = function(a, b) {
+    return goog.string.caseInsensitiveCompare(a.name, b.name)
+};
+Blockly.Variables = {};
+Blockly.Variables.NAME_TYPE = Blockly.VARIABLE_CATEGORY_NAME;
+Blockly.Variables.allUsedVarModels = function(a) {
+    var b = a.getAllBlocks();
+    a = Object.create(null);
+    for (var c = 0; c < b.length; c++) {
+        var d = b[c].getVarModels();
+        if (d)
+            for (var e = 0; e < d.length; e++) {
+                var f = d[e];
+                f && f.getId() && (a[f.getId()] = f)
+            }
+    }
+    b = [];
+    for (var g in a) b.push(a[g]);
+    return b
+};
+Blockly.Variables.allUsedVariables = function() {
+    console.warn("Deprecated call to Blockly.Variables.allUsedVariables. Use Blockly.Variables.allUsedVarModels instead.\nIf this is a major issue please file a bug on GitHub.")
+};
 Blockly.Variables.allDeveloperVariables=function(a){var b=a.getAllBlocks();a={};for(var c=0;c<b.length;c++){var d=b[c];if(d.getDeveloperVars){d=d.getDeveloperVars();for(var e=0;e<d.length;e++)a[d[e]]=d[e]}}b=[];for(var f in a)b.push(a[f]);return b};
 Blockly.Variables.flyoutCategory = function(a) {
     var b = [],
